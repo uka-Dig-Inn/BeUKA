@@ -18,7 +18,11 @@
     "@expo/webpack-config": "^0.17.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9"
+    "@babel/core": "^7.12.9",
+    "typescript": "^4.6.3",
+    "@types/react": "~18.0.0",
+    "@types/react-native": "~0.69.6"
   },
-  "private": true
+  "private": true,
+  "resolutions": { "@types/react": "17.0.43" }
 }
