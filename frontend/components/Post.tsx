@@ -68,7 +68,7 @@ const Post = (post: any) => {
       <Text style={styles.title}>{post.item.title}</Text>
       <Text style={styles.body}>{post.item.body}</Text>
       <Button title="Pick an image from camera roll" onPress={openCamera}/>
-      <ImageBackground source={image ? {uri: image} : require("../assets/MEMES/hildeGcut_out.png")}>
+      <ImageBackground source={image ? {uri: image} : require("../assets/VISJONSlogo_rød.png")}>
         {image ? null :
         <Image
         style={styles.image}
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#E5A9AA",
     width: Dimensions.get("window").width - 50,
-    marginBottom: 20,
+    marginBottom: 100,
     height: Dimensions.get("window").height / 2.5,
     borderRadius: 7,
   },

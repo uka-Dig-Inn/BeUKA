@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   container: {
     marginTop: StatusBar.currentHeight || 0,
     justifyContent: 'center',
-    position: 'absolute',
+    position:'relative',
     alignItems: 'center',
     width: Dimensions.get('window').width,
     }
