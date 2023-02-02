@@ -7,7 +7,8 @@ import {
   Image,
   ImageBackground,
   Button, 
-  Platform
+  Platform,
+  TouchableOpacity
 } from "react-native";
 import { PostProps } from "../types/Post";
 import * as ImagePicker from "expo-image-picker";
@@ -32,6 +33,8 @@ import * as ImagePicker from "expo-image-picker";
  * 
  */
 const Post = (post: any) => {
+
+  const [isShowingText, setIsShowingText] = useState(true);
   
   const [image, setImage] = useState(null);
   
@@ -65,21 +68,29 @@ const Post = (post: any) => {
 
   return (
     <View style={styles.item}>
-      <View>
+      <View style={styles.header}>
         <Text style={styles.title}>{post.item.title}</Text>
-        <Text style={styles.body}>{post.item.body}</Text>
-        <Button title="Pick an image from camera roll" onPress={openCamera}/>
-        <ImageBackground source={image ? {uri: image} : require("../assets/Bb_blue.jpg")}>
-          {image ? null :
-          <Image
-          style={styles.image}
-          source={require("../assets/Red_flag.svg.png")}
-        ></Image>
-        }
+        <Text>{post.item.body}</Text>
+      </View>
+      <View style={styles.body}>
+        <ImageBackground style={styles.image} source={image ? {uri: image} : require("../assets/iphone.jpg")}>
+          <ImageBackground style={[styles.image, styles.button]} source={image ? {uri: image} : require("../assets/UKA_Sub.jpg")}>
+            {isShowingText ? <TouchableOpacity style={styles.buttonContent} onPress={() => {
+                openCamera();
+                if (image != null) {
+                  setIsShowingText(false);
+                }
+                }}>
+                <Text>
+                  Pick an image from camera roll
+                </Text>
+              </TouchableOpacity> : <></>}
+                  
+          </ImageBackground>        
         </ImageBackground>
       </View>
-      <View>
-        <Text style = {styles.description}>{post.item.description} Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales molestie nisl, a elementum leo congue tempor. Aliquam erat volutpat. Aenean id pharetra orci.</Text>
+      <View style={styles.footer}>
+        <Text>{post.item.description} Lorem ipsum dolor sit amet.</Text>
       </View>
     </View>
   );
@@ -89,45 +100,65 @@ export default Post;
 
 const styles = StyleSheet.create({
   item: {
-    flex: 1,
     backgroundColor: "#E5A9AA",
     width: Dimensions.get("window").width - 50,
-    marginBottom: 120,
-    height: Dimensions.get("window").height / 2.5,
-    borderRadius: 7,
+    marginBottom: 50,
+    height: Dimensions.get("window").height / 1.35,
+    // borderRadius: 7,
+    // flexDirection: "column",
     
   },
-  title: {
-    fontSize: 20,
-    fontFamily: "Raleway-bold",
-    flex: 1,
-    flexDirection: "column",
+  header: {
+    // fontSize: 20,
+    // fontFamily: "Raleway-bold",
+    // // flexDirection: "column",
+    backgroundColor: "red",
+    height: "10%",
   },
   body: {
-    fontSize: 16,
-    fontFamily: "Raleway-regular",
-    flex: 1,
-    flexDirection: "column",
+    // fontSize: 16,
+    // fontFamily: "Raleway-regular",
+    // // flexDirection: "column",
+    height: "80%",
+
+  },
+  footer: {
+    height: "10%",
+    backgroundColor: "green",
+
+  },
+  title: {
+
+  },
+  button: {
+    justifyContent: "center",
+    alignItems: "center",
+    
+  },
+  buttonContent: {
+    backgroundColor: "blue",
+
   },
   image: {
-    marginTop: 20,
-    alignSelf: "center",
-    borderRadius: 7,
+    // marginTop: 20,
+    // alignSelf: "center",
+    // borderRadius: 7,
     width: "100%",
     height: "100%",
-    // aspectRatio: Platform.OS === "ios" ? 4/3 : 0.75,
-    resizeMode: "contain",
-    backgroundColor: "white",
-    opacity: 0.9,
-    flex: 3,
-    flexDirection: "column",
+    // // aspectRatio: Platform.OS === "ios" ? 4/3 : 0.75,
+    // resizeMode: "contain",
+    // backgroundColor: "white",
+    // opacity: 0.9,
+    // flexDirection: "column",
+    padding: 0
   },
   description: {
-    fontSize: 16,
-    fontFamily: "Raleway-regular",
+    // fontSize: 16,
+    // fontFamily: "Raleway-regular",
     backgroundColor: "#E5A9AA",
-    flex: 3,
-    flexDirection: "column",
+    // flex: 2,
+    // height: "10%",
+    // // flexDirection: "column",
   },
   
 });
