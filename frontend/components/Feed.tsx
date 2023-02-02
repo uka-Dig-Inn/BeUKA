@@ -11,11 +11,13 @@ const initialPosts = [
     id: 1,
     title: "Post 1",
     body: "Body 1",
+    description: "swagadocious",
   },
   {
     id: 2,
     title: "Post 2",
     body: "Body 2",
+    description: "Halla balla"
   },
     {
     id: 3,
@@ -72,5 +74,6 @@ const styles = StyleSheet.create({
     position:'relative',
     alignItems: 'center',
     width: Dimensions.get('window').width,
-    }
+  }
+    
 });

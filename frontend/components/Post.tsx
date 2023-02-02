@@ -6,7 +6,8 @@ import {
   Dimensions,
   Image,
   ImageBackground,
-  Button,
+  Button, 
+  Platform
 } from "react-native";
 import { PostProps } from "../types/Post";
 import * as ImagePicker from "expo-image-picker";
@@ -58,24 +59,28 @@ const Post = (post: any) => {
         if (!result.cancelled) {
           setImage(result.uri);
         }
-
         return result;
       }
     }
 
   return (
     <View style={styles.item}>
-      <Text style={styles.title}>{post.item.title}</Text>
-      <Text style={styles.body}>{post.item.body}</Text>
-      <Button title="Pick an image from camera roll" onPress={openCamera}/>
-      <ImageBackground source={image ? {uri: image} : require("../assets/VISJONSlogo_rød.png")}>
-        {image ? null :
-        <Image
-        style={styles.image}
-        source={require("../assets/VISJONSlogo_rød.png")}
-      ></Image>
-      }
-      </ImageBackground>
+      <View>
+        <Text style={styles.title}>{post.item.title}</Text>
+        <Text style={styles.body}>{post.item.body}</Text>
+        <Button title="Pick an image from camera roll" onPress={openCamera}/>
+        <ImageBackground source={image ? {uri: image} : require("../assets/Bb_blue.jpg")}>
+          {image ? null :
+          <Image
+          style={styles.image}
+          source={require("../assets/Red_flag.svg.png")}
+        ></Image>
+        }
+        </ImageBackground>
+      </View>
+      <View>
+        <Text style = {styles.description}>{post.item.description} Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sodales molestie nisl, a elementum leo congue tempor. Aliquam erat volutpat. Aenean id pharetra orci.</Text>
+      </View>
     </View>
   );
 };
@@ -87,27 +92,42 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#E5A9AA",
     width: Dimensions.get("window").width - 50,
-    marginBottom: 100,
+    marginBottom: 120,
     height: Dimensions.get("window").height / 2.5,
     borderRadius: 7,
+    
   },
   title: {
     fontSize: 20,
     fontFamily: "Raleway-bold",
+    flex: 1,
+    flexDirection: "column",
   },
   body: {
     fontSize: 16,
     fontFamily: "Raleway-regular",
+    flex: 1,
+    flexDirection: "column",
   },
   image: {
     marginTop: 20,
     alignSelf: "center",
     borderRadius: 7,
     width: "100%",
-    height: undefined,
-    aspectRatio: 1,
+    height: "100%",
+    // aspectRatio: Platform.OS === "ios" ? 4/3 : 0.75,
     resizeMode: "contain",
     backgroundColor: "white",
     opacity: 0.9,
+    flex: 3,
+    flexDirection: "column",
   },
+  description: {
+    fontSize: 16,
+    fontFamily: "Raleway-regular",
+    backgroundColor: "#E5A9AA",
+    flex: 3,
+    flexDirection: "column",
+  },
+  
 });
