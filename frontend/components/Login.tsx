@@ -7,6 +7,7 @@ import {
   Image,
   SafeAreaView,
   StatusBar,
+  Alert,
 } from "react-native";
 
 import { AsyncStorage } from "react-native";
@@ -24,16 +25,26 @@ import {
   signOut,
 } from "firebase/auth";
 
-import auth from "../firebaseConfig";
+import {
+  getDatabase,
+  ref,
+  onValue,
+  onChildAdded,
+  set,
+  push,
+} from "firebase/database";
+
+import auth, { app } from "../firebaseConfig";
 
 import { useFonts } from "expo-font";
+
 import ExpoStatusBar from "expo-status-bar/build/ExpoStatusBar";
+
+import * as Notifications from "expo-notifications";
 
 WebBrowser.maybeCompleteAuthSession();
 
 const Login = ({ navigation }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   const [fontsLoaded] = useFonts({
     "Raleway-regular": require("../assets/fonts/Raleway/static/Raleway-Regular.ttf"),
     "Raleway-bold": require("../assets/fonts/Raleway/static/Raleway-Bold.ttf"),
@@ -45,6 +56,12 @@ const Login = ({ navigation }) => {
     }
   }, [fontsLoaded]);
 
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const [isAddedToDb, setIsAddedToDb] = useState(false);
+
+  const [pushToken, setPushToken] = useState(null);
+
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
     {
       expoClientId:
@@ -55,13 +72,76 @@ const Login = ({ navigation }) => {
     { useProxy: true }
   );
 
+  // mal for alert
+  const createAlert = (title: string, message: string) =>
+    Alert.alert(title, message, [
+      {
+        text: "OK",
+        onPress: () => {},
+      },
+    ]);
+
+  const addVerifiedUserToDatabase = async (user) => {
+    try {
+      let token;
+
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== "granted") {
+        alert("Failed to get push token for push notification!");
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      //console.log(token);
+
+      const db = getDatabase(app);
+      const reference = ref(db, "users");
+
+      const newUserRef = push(reference);
+
+      set(newUserRef, {
+        //created: user.created,
+        //email: user.email,
+        //expoNotificationToken: user.token
+        displayName: user.displayName,
+        email: user.email,
+        emailVerified: user.emailVerified,
+        expoPushToken: token,
+      });
+      console.log("ADDED");
+      setIsAddedToDb(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     const signIn = async () => {
       if (response?.type === "success") {
-        const { id_token } = response.params;
-        const credential = GoogleAuthProvider.credential(id_token);
-        const res = await signInWithCredential(auth, credential);
-        navigation.navigate("feed");
+        try {
+          const { id_token } = response.params;
+          const credential = GoogleAuthProvider.credential(id_token);
+          const res = await signInWithCredential(auth, credential);
+
+          console.log(res.user.displayName);
+
+          await addVerifiedUserToDatabase(res.user);
+
+          //setIsLoggedIn(true);
+
+          navigation.navigate("Feed");
+        } catch (error) {
+          createAlert(
+            "Feil",
+            "Det er kun brukere med UKA-mail som kan bruke appen!"
+          );
+        }
       }
     };
     signIn();
@@ -72,10 +152,6 @@ const Login = ({ navigation }) => {
     console.log("SIGNED OUT");
     setIsLoggedIn(false);
   };
-
-  if (!fontsLoaded) {
-    return null;
-  }
 
   // MED MIN VANLIGE GMAIL IOS: 788859697758-0dvjg775trqaim2kmhp4lja8pmj6c2ld.apps.googleusercontent.com
 
@@ -99,6 +175,18 @@ const Login = ({ navigation }) => {
     } else {
       console.log(response);
     }
+  };
+
+  const leggtil = async () => {
+    const db = getDatabase(app);
+    const reference = ref(db, "notifications");
+
+    const newUserRef = push(reference);
+
+    set(newUserRef, {
+      name: "testtest",
+    });
+    console.log("ADDED");
   };
 
   /*
@@ -127,12 +215,17 @@ const Login = ({ navigation }) => {
 
       */
 
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <SafeAreaView style={styles.container} onLayout={onLayoutRootView}>
       <View style={styles.topContainer}>
         <Text style={styles.headerText}>BeUKA</Text>
       </View>
       <View style={styles.bottomContainer}>
+        {isAddedToDb ? <Text>YESSIR</Text> : <></>}
         <TouchableOpacity
           disabled={!request}
           style={styles.button}
@@ -143,12 +236,25 @@ const Login = ({ navigation }) => {
           <Text style={styles.buttonText}>Logg inn</Text>
         </TouchableOpacity>
       </View>
-      <Text style={styles.bottomText}>Laget av diginn!</Text>
+      <Text style={styles.bottomText}>Laget av Diginn!</Text>
       <ExpoStatusBar style="auto" />
     </SafeAreaView>
   );
 };
 
+/*
+
+        <TouchableOpacity
+          disabled={!request}
+          style={[styles.button, { marginTop: 20 }]}
+          onPress={() => {
+            leggtil();
+          }}
+        >
+          <Text style={styles.buttonText}>Test</Text>
+        </TouchableOpacity>
+
+*/
 export default Login;
 
 const styles = StyleSheet.create({

@@ -12,6 +12,9 @@ import {
 } from "react-native";
 import Post from "./Post";
 
+import * as SplashScreen from "expo-splash-screen";
+SplashScreen.preventAutoHideAsync();
+
 import { signOut } from "firebase/auth";
 import auth from "../firebaseConfig";
 
